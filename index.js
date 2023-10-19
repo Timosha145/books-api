@@ -1,11 +1,14 @@
 const express = require('express');
-const app = express()
-const port = 8080
-const swaggerUi = require('swagger-ui-express')
+const app = express();
+const port = 8080;
+const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
 const yamls = require('yamljs');
 const swaggerDocument = yamls.load('./docs/swagger.yaml');
 
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname));
 
 const books = [
     { id: 1, title: "To Kill a Mockingbird", price: 12.99 },
@@ -49,13 +52,11 @@ app.post('/books', (req, res) => {
         .send(book);
 });
 
-
-
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(port, () => {
     console.log(`API up at: http://localhost:${port}`);
-});
+});s
 
 function getBaseUrl(req) {
     return req.connection && req.connection.encrypted
