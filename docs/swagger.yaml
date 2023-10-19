@@ -1,95 +1,107 @@
-openapi: 3.0.2
+openapi: 3.0.0
 info:
-    title: Books-API
-    version: 1.0.0
-    description: >-
-        ### This is a Swagger UI for our Games API  
-
-
-        ### Error handling
-
-        Errors are presented using the HTTP status codes 400-599. The response include a more detailed
-        explanation about the error in the body.
-
-
-        ```
-
-        {
-          "error": "Cleartext explanation of the error that occurred"
-        }
-
-        ```
-
-
-        ### Generic API errors
-
-        These error responses can be returned by any of the described endpoints.
-
-
-        | HTTP status  |  Description |
-
-        |---|---|
-
-        | 400| Bad input parameters or invalid request. More information can be found in the response body.
-
-        | 401| The consumer does not have access to the requested resource or the provided token is not valid.
-
-        | 404| The requested resource can not be found or the user does not have access to the resource.
-
-        | 5XX| A server error has occurred while processing the request.
+  title: Books API
+  description: A simple API for managing books.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
 paths:
-    /books:
-        description: ''
-        get:
-            tags:
-                - books
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: string
-                            examples:
-                                List of books:
-                                    value:
-                                        - Eesti Keele Õpik
-                                        - Vene Keele Õpik
-                    description: "lisa Returns a list of games, kus games on vastav sinu API-le..\r\n\r\n"
-            summary: Get a list of all games
-            description: Returns a list of all books in API
-    '/books/{id}':
-        get:
-            tags:
-                - details
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: string
-                            examples:
-                                Full details of a book:
-                                    value:
-                                        id: 1
-                                        title: To Kill a Mockingbird
-                                        price: 12.99
-                    description: OK
-                '404':
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: string
-                            examples:
-                                error:
-                                    value:
-                                        error: Book not found
-                    description: Book was not found in books array
-            operationId: id
-            summary: Get full details of a game
-            description: Returns full details of a given id game
+  /books:
+    get:
+      summary: Get a list of books
+      responses:
+        '200':
+          description: A list of books
+          content:
+            application/json:
+              example:
+                - id: 1
+                  title: To Kill a Mockingbird
+                  price: 12.99
+                - id: 2
+                  title: 1984
+                  price: 10.99
+      tags:
+        - Books
+    post:
+      summary: Create a new book
+      requestBody:
+        description: Book data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The title of the book
+                price:
+                  type: number
+                  format: float
+                  description: The price of the book
+            example:
+              title: The Catcher in the Rye
+              price: 10.00
+      responses:
+        '201':
+          description: The created book
+          content:
+            application/json:
+              example:
+                id: 11
+                title: The Catcher in the Rye
+                price: 10.00
+      tags:
+        - Books
+  /books/{id}:
+    get:
+      summary: Get a book by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the book
+      responses:
+        '200':
+          description: A book
+          content:
+            application/json:
+              example:
+                id: 1
+                title: To Kill a Mockingbird
+                price: 12.99
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              example:
+                error: Book not found
+      tags:
+        - Books
+    delete:
+      summary: Delete a book by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the book to delete
+      responses:
+        '204':
+          description: No content
+          content:
+            application/json:
+              example:
+                error: No content
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              example:
+                error: Book not found
+      tags:
+        - Books
