@@ -8,6 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
+<header class="bg-primary text-white p-4">
+    books-API
+</header>
 <div id="app">
     <table id="booksTable" class="table table-striped table-bordered">
         <colgroup>
@@ -18,12 +21,39 @@
             <tr>
                 <th>Book</th>
                 <th>Price</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="book in books" @click="getBook(book.id)">
-                <td>{{ book.title }}</td>
-                <td>{{ book.price }}</td>
+            <tr v-for="book in books" :key="book.id">
+                <td>
+                    <span v-if="isEditing && editingBook.id === book.id">
+                        <input v-model="editingBook.title">
+                    </span>
+                    <span v-else>
+                        {{ book.title }}
+                    </span>
+                </td>
+                <td>
+                    <span v-if="isEditing && editingBook.id === book.id">
+                        <input v-model="editingBook.price">
+                    </span>
+                    <span v-else>
+                        {{ book.price }}
+                    </span>
+                </td>
+                <td>
+                    <button @click="isEditing ? saveEdit(book) : editBook(book)">
+                        {{ isEditing && editingBook.id === book.id ? 'Save' : 'Edit' }}
+                    </button>
+                    <button @click="deleteBook(book.id)">Delete</button>
+                    <button @click="cancelEdit()" v-if="isEditing && editingBook.id === book.id">Cancel</button>
+                </td>
+            </tr>
+            <tr>
+                <td><input v-model="newBook.title" placeholder="Title"></td>
+                <td><input v-model="newBook.price" placeholder="Price"></td>
+                <td><button @click="addBook">Add Book</button></td>
             </tr>
         </tbody>
     </table>
@@ -46,6 +76,7 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/vue@3.2.0/dist/vue.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="rest-client.js"></script>

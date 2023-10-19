@@ -52,13 +52,37 @@ app.post('/books', (req, res) => {
         .send(book);
 });
 
+app.delete('/books/:id', (req, res) => {
+    if (typeof books[req.params.id - 1] === 'undefined') {
+        return res.status(404).send({ error: "Book not found" });
+    }
+    books.splice(req.params.id - 1, 1);
+
+    res.status(204).send({ error: "No content" });
+});
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(port, () => {
     console.log(`API up at: http://localhost:${port}`);
-});s
+});
 
 function getBaseUrl(req) {
     return req.connection && req.connection.encrypted
         ? 'https' : 'http' + `://${req.headers.host}`;
 }
+
+app.put('/books/:id', (req, res) => {
+    const bookId = parseInt(req.params.id);
+    const bookIndex = books.findIndex(book => book.id === bookId);
+
+    if (bookIndex === -1) {
+        return res.status(404).send({ error: "Book not found" });
+    }
+
+    const updatedBook = req.body;
+    books[bookIndex] = updatedBook;
+
+    res.send(updatedBook);
+});
+
